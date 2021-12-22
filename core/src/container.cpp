@@ -188,8 +188,8 @@ void ContainerBasePrivate::setStatus(const InterfaceState* s, InterfaceState::St
 		status = InterfaceState::Status::PRUNED;  // only the first state is marked as FAILED
 
 	// traverse solution tree
-	for (const SolutionBase* successor : trajectories<dir>(*s))
-		setStatus<dir>(state<dir>(*successor), status);
+	// for (const SolutionBase* successor : trajectories<dir>(*s))
+	// 	setStatus<dir>(state<dir>(*successor), status);
 }
 template void ContainerBasePrivate::setStatus<Interface::FORWARD>(const InterfaceState*, InterfaceState::Status);
 template void ContainerBasePrivate::setStatus<Interface::BACKWARD>(const InterfaceState*, InterfaceState::Status);
