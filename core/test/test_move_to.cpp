@@ -1,5 +1,4 @@
 #include "models.h"
-#include "stage_mockups.h"
 
 #include <moveit/task_constructor/task.h>
 #include <moveit/task_constructor/stages/move_to.h>
@@ -51,10 +50,10 @@ struct PandaMoveTo : public testing::Test
 	}
 };
 
-#define EXPECT_ONE_SOLUTION                        \
-	{                                               \
-		EXPECT_TRUE(t.plan() == SUCCESS_ERROR_CODE); \
-		EXPECT_EQ(t.solutions().size(), 1u);         \
+#define EXPECT_ONE_SOLUTION                \
+	{                                       \
+		EXPECT_TRUE(t.plan());               \
+		EXPECT_EQ(t.solutions().size(), 1u); \
 	}
 
 TEST_F(PandaMoveTo, namedTarget) {
