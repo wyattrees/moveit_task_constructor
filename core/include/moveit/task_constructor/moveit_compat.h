@@ -48,3 +48,6 @@
 #define MOVEIT_HAS_OBJECT_POSE 0
 
 #define MOVEIT_HAS_STATE_RIGID_PARENT_LINK 0
+
+// moveit_core has MoveItErrorCode class
+#define MOVEIT_CORE_HAS_ERROR_CODE 0

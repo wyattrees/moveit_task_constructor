@@ -248,30 +248,37 @@ void Task::compute() {
 	stages()->pimpl()->runCompute();
 }
 
-bool Task::plan(size_t max_solutions) {
+moveit::core::MoveItErrorCode Task::plan(size_t max_solutions) {
 	auto impl = pimpl();
 	init();
 
+	// Print state and return success if there are solutions otherwise the input error_code
+	const auto success_or = [this](const int32_t error_code) {
+		printState();
+		return numSolutions() > 0 ? moveit_msgs::msg::MoveItErrorCodes::SUCCESS : error_code;
+	};
 	impl->preempt_requested_ = false;
 	const double available_time = timeout();
 	const auto start_time = std::chrono::steady_clock::now();
-	while (!impl->preempt_requested_ && canCompute() && (max_solutions == 0 || numSolutions() < max_solutions) &&
-	       std::chrono::duration<double>(std::chrono::steady_clock::now() - start_time).count() < available_time) {
+	while (canCompute() && (max_solutions == 0 || numSolutions() < max_solutions)) {
+		if (impl->preempt_requested_)
+			return success_or(moveit_msgs::msg::MoveItErrorCodes::PREEMPTED);
+		if (std::chrono::duration<double>(std::chrono::steady_clock::now() - start_time).count() > available_time)
+			return success_or(moveit_msgs::msg::MoveItErrorCodes::TIMED_OUT);
 		compute();
 		for (const auto& cb : impl->task_cbs_)
 			cb(*this);
 		if (impl->introspection_)
 			impl->introspection_->publishTaskState();
-	}
-	printState();
-	return numSolutions() > 0;
+	};
+	return success_or(moveit_msgs::msg::MoveItErrorCodes::PLANNING_FAILED);
 }
 
 void Task::preempt() {
 	pimpl()->preempt_requested_ = true;
 }
 
-moveit_msgs::msg::MoveItErrorCodes Task::execute(const SolutionBase& s) {
+moveit::core::MoveItErrorCode Task::execute(const SolutionBase& s) {
 	// Add random ID to prevent warnings about multiple publishers within the same node
 	rclcpp::NodeOptions options;
 	options.arguments(
