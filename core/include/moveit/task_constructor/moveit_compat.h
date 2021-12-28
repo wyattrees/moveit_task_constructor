@@ -45,6 +45,6 @@
 	 major * 1'000'000 + minor * 1'000 + patch)
 
 // use object shape poses relative to a single object pose
-#define MOVEIT_HAS_OBJECT_POSE 1
+#define MOVEIT_HAS_OBJECT_POSE 0
 
 #define MOVEIT_HAS_STATE_RIGID_PARENT_LINK 0
